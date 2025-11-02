@@ -16,4 +16,6 @@ In order to run the importer you need to first setup a config file in the follow
 
 then you can call the importer with the following syntax
 
+```
 HLtoGhostFolio "Account Name" "Path to HL CSV file" "Path to Config file"
+```
