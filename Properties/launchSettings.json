@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "HLtoGhostFolio": {
+      "commandName": "Project",
+      "commandLineArgs": "\"HL S&S ISA\" \"C:\\\\Users\\\\mike\\\\OneDrive\\\\Documents\\\\HLco.uk\\\\SnS ISA\\\\AllPortfolio-summary.csv\" \"C:\\\\Users\\\\mike\\\\OneDrive\\\\Documents\\\\HLco.uk\\\\config.json\" "
+    }
+  }
+}
