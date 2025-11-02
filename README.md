@@ -6,7 +6,7 @@ A couple of hurdles exist when conducting this automation, the largest of whch i
 
 In order to run the importer you need to first setup a config file in the following format.
 
-```
+```json
 {
   "BaseUrl": "http://myGhostfolio.local:3333",
   "AccessToken": "3606fdef9f424e0092b21c31164b1a7a1d900d91539ec3a798963153a41528ab06406b48d081702f8620e0d508615c2f04fae912754715537dd895ba0fb9ea8b",
