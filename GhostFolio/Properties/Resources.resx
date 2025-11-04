@@ -123,4 +123,7 @@
   <data name="ImportResultConsoleMessage" xml:space="preserve">
     <value>Import response:</value>
   </data>
+  <data name="MissingAccountsError" xml:space="preserve">
+    <value>JSON does not contain 'accounts' array.</value>
+  </data>
 </root>

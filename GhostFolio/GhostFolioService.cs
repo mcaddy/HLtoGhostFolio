@@ -9,16 +9,16 @@ namespace GhostFolio
 {
     public class GhostFolioService(Config config)
     {
-        private const string importUrl = "{0}api/v1/import?dryRun=false";
-        private const string authUrl = "{0}api/v1/auth/anonymous";
-        private const string accountUrl = "{0}api/v1/account/"; 
+        private const string importUrl = "api/v1/import?dryRun=false";
+        private const string authUrl = "api/v1/auth/anonymous";
+        private const string accountUrl = "api/v1/account/";
 
         private static readonly JsonSerializerOptions jsonSerializerOptions = new()
         {
             PropertyNameCaseInsensitive = true,
             Converters = { new JsonStringEnumConverter() }
         };
-       
+
         private readonly Config config = config;
 
         private string authToken = string.Empty;
@@ -53,7 +53,7 @@ namespace GhostFolio
                     string jsonBody = JsonSerializer.Serialize(requestBody);
                     using StringContent content = new(jsonBody, Encoding.UTF8, "application/json");
 
-                    HttpResponseMessage response = await client.PostAsync(new Uri(string.Format(authUrl, baseUrl)), content).ConfigureAwait(false);
+                    HttpResponseMessage response = await client.PostAsync(new Uri(baseUrl, authUrl), content).ConfigureAwait(false);
                     response.EnsureSuccessStatusCode();
 
                     string authResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -66,7 +66,7 @@ namespace GhostFolio
                         return auth.AuthToken;
                     }
                 }
-                catch (Exception ex)
+                catch (HttpRequestException ex)
                 {
                     Console.WriteLine($"Error: {ex.Message}");
                 }
@@ -122,7 +122,7 @@ namespace GhostFolio
                 assetProfiles,
                 activities,
             };
-            
+
             ResourceManager resourceManager = new("GhostFolio.Properties.Resources", typeof(GhostFolioService).Assembly);
 
             string json = JsonSerializer.Serialize(importBody, jsonSerializerOptions);
@@ -135,7 +135,7 @@ namespace GhostFolio
 
             try
             {
-                var response = await client.PostAsync(new Uri(string.Format(importUrl, baseUrl)), content).ConfigureAwait(false);
+                var response = await client.PostAsync(new Uri(baseUrl, importUrl), content).ConfigureAwait(false);
                 if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
                 {
                     Console.WriteLine(resourceManager.GetString("ImportBadResponseConsoleMessage", System.Globalization.CultureInfo.CurrentCulture));
@@ -150,13 +150,13 @@ namespace GhostFolio
                 Console.WriteLine(resourceManager.GetString("ImportResultConsoleMessage", System.Globalization.CultureInfo.CurrentCulture));
                 Console.WriteLine(responseString);
             }
-            catch (Exception ex)
+            catch (HttpRequestException ex)
             {
                 Console.WriteLine(resourceManager.GetString("ImportErrorConsoleMessage", System.Globalization.CultureInfo.CurrentCulture));
                 Console.WriteLine(ex.Message);
             }
         }
-        
+
 
         public async Task<Account?> GetAccoundByNameAsync(string name)
         {
@@ -169,61 +169,56 @@ namespace GhostFolio
         }
 
         public static async Task<Account?> GetAccoundByNameAsync(string name, string authToken, Uri baseUrl)
-        { 
-            Account foundAccount = new() { Name= name, Id = Guid.Empty };
+        {
+            ResourceManager resourceManager = new("GhostFolio.Properties.Resources", typeof(GhostFolioService).Assembly);
+
+            Account foundAccount = new() { Name = name, Id = Guid.Empty };
 
             if (string.IsNullOrEmpty(authToken))
             {
                 throw new InvalidOperationException("Not authenticated. Please call AuthenticateAsync() first.");
             }
 
+            using var client = new HttpClient();
+
+            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
+
             try
             {
-                using var client = new HttpClient();
+                var response = await client.GetAsync(new Uri(baseUrl, accountUrl)).ConfigureAwait(false);
+                response.EnsureSuccessStatusCode();
 
-                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
+                var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-                try
+                // Parse the JSON document
+                using JsonDocument doc = JsonDocument.Parse(responseString);
+
+                // Navigate to the "accounts" array
+                var root = doc.RootElement;
+                if (!root.TryGetProperty("accounts", out JsonElement accountsElement))
                 {
-                    var response = await client.GetAsync(new Uri(string.Format(accountUrl, baseUrl))).ConfigureAwait(false);
-                    response.EnsureSuccessStatusCode();
-
-                    var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-                    // Parse the JSON document
-                    using JsonDocument doc = JsonDocument.Parse(responseString);
-
-                    // Navigate to the "accounts" array
-                    var root = doc.RootElement;
-                    if (!root.TryGetProperty("accounts", out JsonElement accountsElement))
-                    {
-                        throw new Exception("JSON does not contain 'accounts' array.");
-                    }
-
-                    // Enumerate and find matching name
-                    foreach (var account in accountsElement.EnumerateArray())
-                    {
-                        var accountName = account.GetProperty("name").GetString();
-                        if (string.Equals(accountName, name, StringComparison.OrdinalIgnoreCase))
-                        {
-                            foundAccount.Id = account.GetProperty("id").GetGuid();
-                            return foundAccount;
-                        }
-                    }
-                }
-                catch (HttpRequestException httpEx)
-                {
-                    Console.WriteLine($"HTTP error while fetching accounts: {httpEx.Message}");
+                    Console.WriteLine(resourceManager.GetString("MissingAccountsError", System.Globalization.CultureInfo.CurrentCulture));
                     return null;
                 }
 
-                return null; // Not found
+                // Enumerate and find matching name
+                foreach (var account in accountsElement.EnumerateArray())
+                {
+                    var accountName = account.GetProperty("name").GetString();
+                    if (string.Equals(accountName, name, StringComparison.OrdinalIgnoreCase))
+                    {
+                        foundAccount.Id = account.GetProperty("id").GetGuid();
+                        return foundAccount;
+                    }
+                }
             }
-            catch (Exception ex)
+            catch (HttpRequestException httpEx)
             {
-                Console.WriteLine($"Error parsing accounts JSON: {ex.Message}");
+                Console.WriteLine($"HTTP error while fetching accounts: {httpEx.Message}");
                 return null;
             }
+
+            return null; // Not found
         }
     }
 }

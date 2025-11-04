@@ -108,8 +108,17 @@ namespace HL
 
                             transactions.Add(transaction);
                         }
-
-                        catch (Exception ex)
+                        catch (ArgumentNullException ex)
+                        {
+                            Console.WriteLine($"Failed to parse row: {line}");
+                            Console.WriteLine(ex.Message);
+                        }   
+                        catch (FormatException ex)
+                        {
+                            Console.WriteLine($"Failed to parse row: {line}");
+                            Console.WriteLine(ex.Message);
+                        }
+                        catch (OverflowException ex)
                         {
                             Console.WriteLine($"Failed to parse row: {line}");
                             Console.WriteLine(ex.Message);

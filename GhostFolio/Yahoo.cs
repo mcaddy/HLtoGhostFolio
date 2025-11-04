@@ -1,6 +1,6 @@
 ﻿namespace GhostFolio
 {
-    internal class Yahoo
+    static internal class Yahoo
     {
         static public string LookupYahooCode(string StockName, Config config)
         {

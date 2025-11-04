@@ -77,5 +77,14 @@ namespace GhostFolio.Properties {
                 return ResourceManager.GetString("ImportResultConsoleMessage", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to JSON does not contain &apos;accounts&apos; array..
+        /// </summary>
+        internal static string MissingAccountsError {
+            get {
+                return ResourceManager.GetString("MissingAccountsError", resourceCulture);
+            }
+        }
     }
 }
