@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿using Microsoft.VisualBasic;
+using System.Collections.ObjectModel;
+using System.Text.Json.Serialization;
 
 namespace GhostFolio
 {
@@ -15,7 +17,7 @@ namespace GhostFolio
         public string? Comment { get; set; } 
 
         [JsonPropertyName("countries")]
-        public List<CountryAllocation> Countries { get; set; } = [];
+        public Collection<CountryAllocation> Countries { get; } = [];
 
         [JsonPropertyName("currency")]
         public Currency Currency { get; set; }
@@ -36,7 +38,7 @@ namespace GhostFolio
         public string? FigiShareClass { get; set; }
 
         [JsonPropertyName("holdings")]
-        public List<object> Holdings { get; set; } = [];
+        public Collection <object> Holdings { get; } = [];
 
         [JsonPropertyName("isActive")]
         public bool IsActive { get; set; } = true;
@@ -45,7 +47,7 @@ namespace GhostFolio
         public string? Isin { get; set; }
 
         [JsonPropertyName("marketData")]
-        public List<string> MarketData { get; set; } = [];
+        public Collection<string> MarketData { get; } = [];
 
         [JsonPropertyName("name")]
         public string? Name { get; set; }
@@ -54,7 +56,7 @@ namespace GhostFolio
         public object? ScraperConfiguration { get; set; }
 
         [JsonPropertyName("sectors")]
-        public List<SectorAllocation> Sectors { get; set; } = [];
+        public Collection<SectorAllocation> Sectors { get; } = [];
 
         [JsonPropertyName("symbol")]
         public string? Symbol { get; set; }
@@ -63,6 +65,6 @@ namespace GhostFolio
        // public Dictionary<string, object> SymbolMapping { get; set; } = [];
 
         [JsonPropertyName("url")]
-        public string? Url { get; set; }
+        public Uri? Url { get; set; }
     }
 }

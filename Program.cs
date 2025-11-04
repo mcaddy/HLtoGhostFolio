@@ -3,6 +3,7 @@ using HL;
 using System.Text.Json;
 using System.Globalization;
 using System.Resources;
+using System.Collections.ObjectModel;
 
 ResourceManager resourceManager = new("Resources", typeof(Program).Assembly);
 
@@ -47,12 +48,12 @@ static async Task importAsync(string accountName, string filePath, string config
         string[] CsvContents = await File.ReadAllLinesAsync(filePath).ConfigureAwait(false);
         Console.WriteLine($"Read {CsvContents.Length} entries from CSV for '{accountName}'");
 
-        List<Transaction> transactions = HLService.ParseCSV(CsvContents);
+        Collection<Transaction> transactions = HLService.ParseCSV(CsvContents);
 
         // Convert the List of all transactions into GhostFolio Activities
         List<string> skipFunds = [];
 
-        List<Activity> activities = [];
+        Collection<Activity> activities = [];
 
         foreach (Transaction item in transactions)
         {
