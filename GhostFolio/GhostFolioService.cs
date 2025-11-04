@@ -1,4 +1,7 @@
-﻿using System.Text;
+﻿using System.Collections.ObjectModel;
+using System.Resources;
+using System.Runtime.Versioning;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -6,9 +9,9 @@ namespace GhostFolio
 {
     public class GhostFolioService(Config config)
     {
-        private const string importUrl = "{0}/api/v1/import?dryRun=false";
-        private const string authUrl = "{0}/api/v1/auth/anonymous";
-        private const string accountUrl = "{0}/api/v1/account/"; 
+        private const string importUrl = "{0}api/v1/import?dryRun=false";
+        private const string authUrl = "{0}api/v1/auth/anonymous";
+        private const string accountUrl = "{0}api/v1/account/"; 
 
         private static readonly JsonSerializerOptions jsonSerializerOptions = new()
         {
@@ -22,12 +25,12 @@ namespace GhostFolio
 
         public bool IsAuthenticated
         {
-            get { return authToken != string.Empty; }
+            get { return !string.IsNullOrEmpty(authToken); }
         }
 
         public async Task<string> AuthenticateAsync()
         {
-            this.authToken = await AuthenticateAsync(config.AccessToken, config.BaseUrl);
+            this.authToken = await AuthenticateAsync(config.AccessToken, config.BaseUrl).ConfigureAwait(false);
             return authToken;
         }
 
@@ -36,7 +39,7 @@ namespace GhostFolio
         /// </summary>
         /// <param name="accessToken">User Access Token</param>
         /// <returns>An Auth token</returns>
-        public static async Task<string> AuthenticateAsync(string accessToken, string baseUrl)
+        public static async Task<string> AuthenticateAsync(string accessToken, Uri baseUrl)
         {
             using (var client = new HttpClient())
             {
@@ -47,13 +50,13 @@ namespace GhostFolio
                         accessToken
                     };
 
-                    var jsonBody = JsonSerializer.Serialize(requestBody);
-                    var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+                    string jsonBody = JsonSerializer.Serialize(requestBody);
+                    using StringContent content = new(jsonBody, Encoding.UTF8, "application/json");
 
-                    var response = await client.PostAsync(string.Format(authUrl, baseUrl), content);
+                    HttpResponseMessage response = await client.PostAsync(new Uri(string.Format(authUrl, baseUrl)), content).ConfigureAwait(false);
                     response.EnsureSuccessStatusCode();
 
-                    string authResponse = await response.Content.ReadAsStringAsync();
+                    string authResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                     // Deserialize the JSON to extract the auth token
                     AuthResponse? auth = JsonSerializer.Deserialize<AuthResponse>(authResponse, jsonSerializerOptions);
@@ -73,14 +76,14 @@ namespace GhostFolio
 
         }
 
-        public async Task ImportAsync(List<Activity> activities)
+        public async Task ImportAsync(Collection<Activity> activities)
         {
             if (string.IsNullOrEmpty(this.authToken))
             {
                 throw new InvalidOperationException("Not authenticated. Please call AuthenticateAsync() first.");
             }
 
-            await ImportAsync(this.authToken, activities, config.ManagementFeeSymbol, config.InterestSymbol, config.BaseUrl);
+            await ImportAsync(this.authToken, activities, config.BondWinSymbol, config.ManagementFeeSymbol, config.InterestSymbol, config.BaseUrl).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -88,7 +91,7 @@ namespace GhostFolio
         /// </summary>
         /// <param name="authToken">valid auth token</param>
         /// <param name="activities">List of activities</param>
-        public static async Task ImportAsync(string authToken, List<Activity> activities, string managementFeeSymbol, string interestSymbol, string baseUrl)
+        public static async Task ImportAsync(string authToken, Collection<Activity> activities, string bondWinSymbol, string managementFeeSymbol, string interestSymbol, Uri baseUrl)
         {
             var assetProfiles = new List<AssetProfile>(2)
             {
@@ -104,6 +107,12 @@ namespace GhostFolio
                     DataSource = DataSource.MANUAL,
                     Name = "Interest",
                     Symbol = interestSymbol,
+                },
+                new() {
+                    Currency = Currency.GBP,
+                    DataSource = DataSource.MANUAL,
+                    Name = "Premium Bond Win",
+                    Symbol = bondWinSymbol,
                 }
             };
 
@@ -113,9 +122,11 @@ namespace GhostFolio
                 assetProfiles,
                 activities,
             };
+            
+            ResourceManager resourceManager = new("GhostFolio.Properties.Resources", typeof(GhostFolioService).Assembly);
 
             string json = JsonSerializer.Serialize(importBody, jsonSerializerOptions);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            using StringContent content = new(json, Encoding.UTF8, "application/json");
 
             // Invoke the import
             using var client = new HttpClient();
@@ -124,19 +135,28 @@ namespace GhostFolio
 
             try
             {
-                var response = await client.PostAsync(string.Format(importUrl,baseUrl), content);
+                var response = await client.PostAsync(new Uri(string.Format(importUrl, baseUrl)), content).ConfigureAwait(false);
+                if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                {
+                    Console.WriteLine(resourceManager.GetString("ImportBadResponseConsoleMessage", System.Globalization.CultureInfo.CurrentCulture));
+                    Console.WriteLine(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+
+                    return;
+                }
+
                 response.EnsureSuccessStatusCode();
 
-                var responseString = await response.Content.ReadAsStringAsync();
-                Console.WriteLine("Import response:");
+                var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                Console.WriteLine(resourceManager.GetString("ImportResultConsoleMessage", System.Globalization.CultureInfo.CurrentCulture));
                 Console.WriteLine(responseString);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error during import:");
+                Console.WriteLine(resourceManager.GetString("ImportErrorConsoleMessage", System.Globalization.CultureInfo.CurrentCulture));
                 Console.WriteLine(ex.Message);
             }
         }
+        
 
         public async Task<Account?> GetAccoundByNameAsync(string name)
         {
@@ -145,10 +165,10 @@ namespace GhostFolio
                 throw new InvalidOperationException("Not authenticated. Please call AuthenticateAsync() first.");
             }
 
-            return await GetAccoundByNameAsync(name, authToken, config.BaseUrl);
+            return await GetAccoundByNameAsync(name, authToken, config.BaseUrl).ConfigureAwait(false);
         }
 
-        public static async Task<Account?> GetAccoundByNameAsync(string name, string authToken, string baseUrl)
+        public static async Task<Account?> GetAccoundByNameAsync(string name, string authToken, Uri baseUrl)
         { 
             Account foundAccount = new() { Name= name, Id = Guid.Empty };
 
@@ -165,10 +185,10 @@ namespace GhostFolio
 
                 try
                 {
-                    var response = await client.GetAsync(string.Format(accountUrl, baseUrl));
+                    var response = await client.GetAsync(new Uri(string.Format(accountUrl, baseUrl))).ConfigureAwait(false);
                     response.EnsureSuccessStatusCode();
 
-                    var responseString = await response.Content.ReadAsStringAsync();
+                    var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                     // Parse the JSON document
                     using JsonDocument doc = JsonDocument.Parse(responseString);

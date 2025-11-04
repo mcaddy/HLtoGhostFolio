@@ -15,7 +15,7 @@
                 }
             }
             
-            throw new Exception($"Yahoo code not found for '{StockName}'");
+            throw new KeyNotFoundException($"Yahoo code not found for '{StockName}'");
         }
     }
 }
