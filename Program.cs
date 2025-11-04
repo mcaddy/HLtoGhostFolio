@@ -62,7 +62,10 @@ static async Task importAsync(string accountName, string filePath, string config
                 && !item.Reference.Equals("FPC", StringComparison.OrdinalIgnoreCase) 
                 && !item.Reference.Equals("TRANSFER", StringComparison.OrdinalIgnoreCase) 
                 && !item.Reference.Equals("LISA", StringComparison.OrdinalIgnoreCase) 
-                && !item.Description.Equals("SIPP CONTRIBUTION CLAIM", StringComparison.OrdinalIgnoreCase))
+                && !item.Description.Equals("SIPP CONTRIBUTION CLAIM", StringComparison.OrdinalIgnoreCase)
+                && !item.Description.StartsWith("Unit Rebate Re-Investment", StringComparison.OrdinalIgnoreCase)
+                && !item.Description.StartsWith("Income Re-Investment", StringComparison.OrdinalIgnoreCase)
+                )
             {
                 Activity activity = new(item, account.Id, Currency.GBP, config);
 
