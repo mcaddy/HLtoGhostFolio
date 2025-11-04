@@ -3,7 +3,7 @@
     public enum Currency
     {
         GBP, // GB Pound
-        GPX, // GB Pence
+        GBp, // GB Pence
         USD,
     }
 }

@@ -1,4 +1,6 @@
 ﻿using HL;
+using Microsoft.VisualBasic;
+using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 
 namespace GhostFolio
@@ -10,22 +12,42 @@ namespace GhostFolio
             accountId = targetAccountId;
             currency = targetCurrency;
 
+            ArgumentNullException.ThrowIfNull(transaction);
+
+            ArgumentNullException.ThrowIfNull(config);
+
             date = transaction.TradeDate;
 
-            if (transaction.Reference.Equals("MANAGE FEE"))
+            if (transaction.Reference.Equals("MANAGE FEE", StringComparison.OrdinalIgnoreCase))
             {
                 type = ActivityType.FEE;
                 fee = -transaction.Value;
                 dataSource = DataSource.MANUAL;
                 symbol = config.ManagementFeeSymbol;
             }
-            else if (transaction.Reference.Equals("INTEREST"))
+            else if (transaction.Reference.Equals("INTEREST", StringComparison.OrdinalIgnoreCase))
             {
                 type = ActivityType.INTEREST;
                 quantity = 1;
-                unitPrice = transaction.UnitCost / 100;
+                unitPrice = transaction.UnitCost;
                 dataSource = DataSource.MANUAL;
                 symbol = config.InterestSymbol;
+            }
+            else if (transaction.Reference.Equals("BOND WIN", StringComparison.OrdinalIgnoreCase))
+            {
+                type = ActivityType.INTEREST;
+                quantity = 1;
+                unitPrice = transaction.Quantity;
+                dataSource = DataSource.MANUAL;
+                symbol = config.BondWinSymbol;
+            }
+            else if (transaction.Reference.Equals("BOND BUY", StringComparison.OrdinalIgnoreCase))
+            {
+                type = ActivityType.BUY;
+                quantity = transaction.Quantity;
+                unitPrice = 1;
+                dataSource = DataSource.MANUAL;
+                symbol = "GF_Premium Bond";
             }
             else
             {
@@ -138,13 +160,12 @@ namespace GhostFolio
             set { symbol = value; }
         }
 
-        private List<string> tags;
+        private Collection<string> tags = [];
 
         [JsonPropertyName("tags")]
-        public List<string> Tags
+        public Collection<string> Tags
         {
             get { return tags; }
-            set { tags = value; }
         }
 
     }
