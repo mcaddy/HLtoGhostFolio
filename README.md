@@ -14,6 +14,13 @@ In order to run the importer you need to first setup a config file in the follow
 }
 ```
 
+then you need a mapping file between the HL transaction descriptions and Yahoo ticker in the following format.
+
+```csv
+0P0000Z8O1.L	abrdn Global Smaller Companies Class S - Accumulation (GBP)	GB00BBX46522	[ { "code": "US", "weight": 0.4886 }, { "code": "GB", "weight": 0.0754 }, { "code": "DE", "weight": 0.0586 }, { "code": "AU", "weight": 0.0522 }, { "code": "FR", "weight": 0.0459 }, { "code": "MX", "weight": 0.0310 }, { "code": "SE", "weight": 0.0216 }, { "code": "IN", "weight": 0.0180 },  { "code": "TW", "weight": 0.0162 }, { "code": "ES", "weight": 0.0132 }, { "code": "IT", "weight": 0.0114 }, { "code": "PL", "weight": 0.0098 }]
+0P0001AE23.L	Allianz Global Artificial Intelligence Accumulation - GBP - Class PT	LU1597246385	[ { "code": "US", "weight": 0.7911 }, { "code": "TW", "weight": 0.0332 }, { "code": "CA", "weight": 0.0308 }, { "code": "SG", "weight": 0.0225 }, { "code": "NL", "weight": 0.0215 }, { "code": "LU", "weight": 0.0145 }, { "code": "HK", "weight": 0.0123 }, { "code": "IE", "weight": 0.0121 }, { "code": "GB", "weight": 0.0106 }, { "code": "CN", "weight": 0.0056 } ]
+```
+
 then you can call the importer with the following syntax
 
 ```
