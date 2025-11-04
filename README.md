@@ -24,6 +24,6 @@ Only the first two colums are used at this time, however the ISIN and countries 
 
 then you can call the importer with the following syntax
 
-```
+```cmd
 HLtoGhostFolio "GhostFolio Account Name" "Path to HL CSV file" "Path to Config file"
 ```
