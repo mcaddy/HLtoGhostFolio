@@ -29,7 +29,7 @@ namespace GhostFolio
             {
                 type = ActivityType.INTEREST;
                 quantity = 1;
-                unitPrice = transaction.UnitCost;
+                unitPrice = transaction.Value;
                 dataSource = DataSource.MANUAL;
                 symbol = config.InterestSymbol;
             }

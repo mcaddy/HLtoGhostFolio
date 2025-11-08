@@ -15,6 +15,10 @@
     "HL S&S ISA > GhostFolio": {
       "commandName": "Project",
       "commandLineArgs": "\"HL S&S ISA\" \"C:\\\\Users\\\\mike\\\\OneDrive\\\\Documents\\\\HLco.uk\\\\SnS ISA\\\\AllPortfolio-summary.csv\" \"C:\\\\Users\\\\mike\\\\OneDrive\\\\Documents\\\\HLco.uk\\\\config.json\" "
+    },
+    "HL LISA > GhostFolio": {
+      "commandName": "Project",
+      "commandLineArgs": "\"HL LISA\" \"C:\\\\Users\\\\mike\\\\OneDrive\\\\Documents\\\\HLco.uk\\\\LISA\\\\AllPortfolio-summary.csv\" \"C:\\\\Users\\\\mike\\\\OneDrive\\\\Documents\\\\HLco.uk\\\\config.json\" "
     }
   }
 }
