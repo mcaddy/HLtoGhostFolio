@@ -70,7 +70,18 @@ namespace HL
 
         private static string StripString(string input, string remove)
         {
-            return input.StartsWith(remove, StringComparison.OrdinalIgnoreCase) ? input[remove.Length..].Trim() : input;
+            string result = input;
+
+            if (input.StartsWith(remove, StringComparison.OrdinalIgnoreCase))
+            {
+                result = input[remove.Length..].Trim();
+            }
+            else if (input.EndsWith(remove, StringComparison.OrdinalIgnoreCase))
+            {
+                result = input[..^remove.Length].Trim();
+            }
+
+            return result;
         }
 
         public string FundName()
@@ -88,8 +99,12 @@ namespace HL
             {
                 result = match.Groups[1].Value.Trim();
             }
+            else
+            {
+                result = StripString(result, "Net Redemption Payment");
+            }
 
-            result = result.EndsWith("Fee Sale -", StringComparison.OrdinalIgnoreCase) ? result[..^"Fee Sale -".Length].Trim() : result;
+            result = StripString(result, "Fee Sale -");
 
             return result;
         }
