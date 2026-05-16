@@ -52,8 +52,8 @@ namespace GhostFolio
         [JsonPropertyName("name")]
         public string? Name { get; set; }
 
-        [JsonPropertyName("scraperConfiguration")]
-        public object? ScraperConfiguration { get; set; }
+    //    [JsonPropertyName("scraperConfiguration")]
+     //   public object? ScraperConfiguration { get; set; }
 
         [JsonPropertyName("sectors")]
         public Collection<SectorAllocation> Sectors { get; } = [];
