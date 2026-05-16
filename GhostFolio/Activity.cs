@@ -1,7 +1,7 @@
-﻿using HL;
-using Microsoft.VisualBasic;
+using HL;
 using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
+using Trading212;
 
 namespace GhostFolio
 {
@@ -68,6 +68,52 @@ namespace GhostFolio
 
             comment = transaction.Description;
             tags = [];
+        }
+
+        public Activity(Trading212Transaction transaction, Guid targetAccountId, Currency targetCurrency)
+        {
+            ArgumentNullException.ThrowIfNull(transaction);
+
+            accountId = targetAccountId;
+            currency = targetCurrency;
+            date = transaction.Time;
+            comment = transaction.Name;
+            tags = [];
+            dataSource = DataSource.YAHOO;
+            symbol = DeriveYahooSymbol(transaction.Ticker, transaction.PricePerShareCurrency);
+
+            if (transaction.Action.Equals("Market buy", StringComparison.OrdinalIgnoreCase))
+            {
+                type = ActivityType.BUY;
+                quantity = transaction.NumberOfShares;
+                unitPrice = transaction.PricePerShare / transaction.ExchangeRate;
+            }
+            else if (transaction.Action.Equals("Market sell", StringComparison.OrdinalIgnoreCase))
+            {
+                type = ActivityType.SELL;
+                quantity = transaction.NumberOfShares;
+                unitPrice = transaction.PricePerShare / transaction.ExchangeRate;
+            }
+            else if (transaction.Action.Equals("Dividend", StringComparison.OrdinalIgnoreCase))
+            {
+                type = ActivityType.DIVIDEND;
+                quantity = 1;
+                unitPrice = transaction.Total;
+            }
+            else
+            {
+                throw new NotSupportedException($"Unsupported Trading212 action: '{transaction.Action}'");
+            }
+        }
+
+        private static string DeriveYahooSymbol(string ticker, string pricePerShareCurrency)
+        {
+            if (pricePerShareCurrency.Equals("USD", StringComparison.OrdinalIgnoreCase))
+            {
+                return ticker;
+            }
+
+            return ticker + ".L";
         }
 
         private Guid accountId;

@@ -5,6 +5,7 @@
         BUY,
         SELL,
         INTEREST,
-        FEE
+        FEE,
+        DIVIDEND
     }
 }

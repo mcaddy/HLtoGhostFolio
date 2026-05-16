@@ -19,6 +19,10 @@
     "HL LISA > GhostFolio": {
       "commandName": "Project",
       "commandLineArgs": "\"HL LISA\" \"C:\\Users\\mike\\OneDrive\\Documents\\Finance\\HLco.uk\\LISA\\AllPortfolio-summary.csv\" \"C:\\Users\\mike\\OneDrive\\Documents\\Finanace\\config.json\" "
+    },
+    "T212 ISA > GhostFolio": {
+      "commandName": "Project",
+      "commandLineArgs": "\"Trading212 ISA\" \"C:\\Users\\mike\\OneDrive\\Documents\\Finance\\Trading212\\ISA_All.csv\" \"C:\\Users\\mike\\OneDrive\\Documents\\Finance\\config.json\""
     }
   }
 }

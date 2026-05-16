@@ -14,15 +14,19 @@
   <ItemGroup>
     <Compile Remove="GhostFolio\**" />
     <Compile Remove="HL\**" />
+    <Compile Remove="Trading212\**" />
     <EmbeddedResource Remove="GhostFolio\**" />
     <EmbeddedResource Remove="HL\**" />
+    <EmbeddedResource Remove="Trading212\**" />
     <None Remove="GhostFolio\**" />
     <None Remove="HL\**" />
+    <None Remove="Trading212\**" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="GhostFolio\GhostFolio.csproj" />
     <ProjectReference Include="HL\HL.csproj" />
+    <ProjectReference Include="Trading212\Trading212.csproj" />
   </ItemGroup>
 
   <ItemGroup>
