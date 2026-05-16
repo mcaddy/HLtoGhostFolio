@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualBasic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 
 namespace GhostFolio
