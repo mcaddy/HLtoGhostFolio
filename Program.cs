@@ -111,7 +111,8 @@ static async Task<Collection<Activity>> ParseHLActivitiesAsync(string[] csvConte
             && !item.Reference.Equals("LISA", StringComparison.OrdinalIgnoreCase)
             && !item.Description.Equals("SIPP CONTRIBUTION CLAIM", StringComparison.OrdinalIgnoreCase)
             && !item.Description.StartsWith("Unit Rebate Re-Investment", StringComparison.OrdinalIgnoreCase)
-            && !item.Description.StartsWith("Income Re-Investment", StringComparison.OrdinalIgnoreCase))
+            && !item.Description.StartsWith("Income Re-Investment", StringComparison.OrdinalIgnoreCase)
+            && !item.Reference.StartsWith("HLS", StringComparison.OrdinalIgnoreCase))
         {
             if (skipFundNames.Contains(item.FundName()))
             {
