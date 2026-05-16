@@ -94,15 +94,15 @@ namespace HL
 
                             if (!result[4].Equals("n/a", StringComparison.OrdinalIgnoreCase))
                             {
-                                transaction.UnitCost = float.Parse(result[4].Replace("\"", "", StringComparison.OrdinalIgnoreCase), CultureInfo.InvariantCulture);
+                                transaction.UnitCost = decimal.Parse(result[4].Replace("\"", "", StringComparison.OrdinalIgnoreCase), CultureInfo.InvariantCulture);
                             }
                             if (!result[5].Equals("n/a", StringComparison.OrdinalIgnoreCase))
                             {
-                                transaction.Quantity = float.Parse(result[5].Replace("\"", "", StringComparison.OrdinalIgnoreCase), CultureInfo.InvariantCulture);
+                                transaction.Quantity = decimal.Parse(result[5].Replace("\"", "", StringComparison.OrdinalIgnoreCase), CultureInfo.InvariantCulture);
                             }
                             if (!string.IsNullOrEmpty(result[6]) && !result[6].Equals("n/a", StringComparison.OrdinalIgnoreCase))
                             {
-                                transaction.Value = float.Parse(result[6].Replace("\"", "", StringComparison.OrdinalIgnoreCase), CultureInfo.InvariantCulture);
+                                transaction.Value = decimal.Parse(result[6].Replace("\"", "", StringComparison.OrdinalIgnoreCase), CultureInfo.InvariantCulture);
                             }
 
 

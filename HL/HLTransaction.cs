@@ -44,25 +44,25 @@ namespace HL
             set { description = value; }
         }
 
-        private float unitCost;
+        private decimal unitCost;
 
-        public float UnitCost
+        public decimal UnitCost
         {
             get { return unitCost; }
             set { unitCost = value; }
         }
 
-        private float quantity;
+        private decimal quantity;
 
-        public float Quantity
+        public decimal Quantity
         {
             get { return quantity; }
             set { quantity = value; }
         }
 
-        private float transactionValue;
+        private decimal transactionValue;
 
-        public float Value
+        public decimal Value
         {
             get { return transactionValue; }
             set { transactionValue = value; }

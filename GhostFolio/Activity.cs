@@ -28,7 +28,7 @@ namespace GhostFolio
             else if (transaction.Reference.Equals("INTEREST", StringComparison.OrdinalIgnoreCase))
             {
                 type = ActivityType.INTEREST;
-                quantity = 1;
+                quantity = 1m;
                 unitPrice = transaction.Value;
                 dataSource = DataSource.MANUAL;
                 symbol = config.InterestSymbol;
@@ -36,7 +36,7 @@ namespace GhostFolio
             else if (transaction.Reference.Equals("BOND WIN", StringComparison.OrdinalIgnoreCase))
             {
                 type = ActivityType.INTEREST;
-                quantity = 1;
+                quantity = 1m;
                 unitPrice = transaction.Quantity;
                 dataSource = DataSource.MANUAL;
                 symbol = config.BondWinSymbol;
@@ -45,7 +45,7 @@ namespace GhostFolio
             {
                 type = ActivityType.BUY;
                 quantity = transaction.Quantity;
-                unitPrice = 1;
+                unitPrice = 1m;
                 dataSource = DataSource.MANUAL;
                 symbol = "GF_Premium Bond";
             }
@@ -60,7 +60,7 @@ namespace GhostFolio
                     type = ActivityType.SELL;
                 }
 
-                unitPrice = transaction.UnitCost / 100;
+                unitPrice = transaction.UnitCost / 100m;
                 quantity = transaction.Quantity;
                 dataSource = DataSource.YAHOO;
                 symbol = Yahoo.LookupYahooCode(transaction.FundName(), config);
@@ -97,7 +97,7 @@ namespace GhostFolio
             else if (transaction.Action.Equals("Dividend", StringComparison.OrdinalIgnoreCase))
             {
                 type = ActivityType.DIVIDEND;
-                quantity = 1;
+                quantity = 1m;
                 unitPrice = transaction.Total;
             }
             else
@@ -134,19 +134,19 @@ namespace GhostFolio
             set { comment = value; }
         }
 
-        private float fee;
+        private decimal fee;
 
         [JsonPropertyName("fee")]
-        public float Fee
+        public decimal Fee
         {
             get { return fee; }
             set { fee = value; }
         }
 
-        private float quantity;
+        private decimal quantity;
 
         [JsonPropertyName("quantity")]
-        public float Quantity
+        public decimal Quantity
         {
             get { return quantity; }
             set { quantity = value; }
@@ -161,10 +161,10 @@ namespace GhostFolio
             set { type = value; }
         }
 
-        private float unitPrice;
+        private decimal unitPrice;
 
         [JsonPropertyName("unitPrice")]
-        public float UnitPrice
+        public decimal UnitPrice
         {
             get { return unitPrice; }
             set { unitPrice = value; }

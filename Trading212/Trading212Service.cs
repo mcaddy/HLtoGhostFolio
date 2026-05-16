@@ -77,22 +77,22 @@ namespace Trading212
 
                     if (!string.IsNullOrEmpty(fields[ColShares]))
                     {
-                        transaction.NumberOfShares = float.Parse(fields[ColShares].Trim(), CultureInfo.InvariantCulture);
+                        transaction.NumberOfShares = decimal.Parse(fields[ColShares].Trim(), CultureInfo.InvariantCulture);
                     }
 
                     if (!string.IsNullOrEmpty(fields[ColPrice]))
                     {
-                        transaction.PricePerShare = float.Parse(fields[ColPrice].Trim(), CultureInfo.InvariantCulture);
+                        transaction.PricePerShare = decimal.Parse(fields[ColPrice].Trim(), CultureInfo.InvariantCulture);
                     }
 
                     if (!string.IsNullOrEmpty(fields[ColExchangeRate]))
                     {
-                        transaction.ExchangeRate = float.Parse(fields[ColExchangeRate].Trim(), CultureInfo.InvariantCulture);
+                        transaction.ExchangeRate = decimal.Parse(fields[ColExchangeRate].Trim(), CultureInfo.InvariantCulture);
                     }
 
                     if (!string.IsNullOrEmpty(fields[ColTotal]))
                     {
-                        transaction.Total = float.Parse(fields[ColTotal].Trim(), CultureInfo.InvariantCulture);
+                        transaction.Total = decimal.Parse(fields[ColTotal].Trim(), CultureInfo.InvariantCulture);
                     }
 
                     transactions.Add(transaction);

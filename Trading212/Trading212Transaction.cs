@@ -71,17 +71,17 @@ namespace Trading212
             set { id = value; }
         }
 
-        private float numberOfShares;
+        private decimal numberOfShares;
 
-        public float NumberOfShares
+        public decimal NumberOfShares
         {
             get { return numberOfShares; }
             set { numberOfShares = value; }
         }
 
-        private float pricePerShare;
+        private decimal pricePerShare;
 
-        public float PricePerShare
+        public decimal PricePerShare
         {
             get { return pricePerShare; }
             set { pricePerShare = value; }
@@ -95,17 +95,17 @@ namespace Trading212
             set { pricePerShareCurrency = value; }
         }
 
-        private float exchangeRate;
+        private decimal exchangeRate = 1m;
 
-        public float ExchangeRate
+        public decimal ExchangeRate
         {
             get { return exchangeRate; }
             set { exchangeRate = value; }
         }
 
-        private float total;
+        private decimal total;
 
-        public float Total
+        public decimal Total
         {
             get { return total; }
             set { total = value; }
