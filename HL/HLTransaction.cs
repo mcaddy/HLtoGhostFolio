@@ -2,9 +2,9 @@
 
 namespace HL
 {
-    public class Transaction
+    public class HLTransaction
     {
-        public Transaction()
+        public HLTransaction()
         {
             tradeDate = DateTime.MinValue;
             settleDate = DateTime.MinValue;

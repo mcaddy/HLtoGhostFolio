@@ -48,14 +48,14 @@ static async Task importAsync(string accountName, string filePath, string config
         string[] CsvContents = await File.ReadAllLinesAsync(filePath).ConfigureAwait(false);
         Console.WriteLine($"Read {CsvContents.Length} entries from CSV for '{accountName}'");
 
-        Collection<Transaction> transactions = HLService.ParseCSV(CsvContents);
+        Collection<HLTransaction> transactions = HLService.ParseCSV(CsvContents);
 
         // Convert the List of all transactions into GhostFolio Activities
         List<string> skipFunds = [];
 
         Collection<Activity> activities = [];
 
-        foreach (Transaction item in transactions)
+        foreach (HLTransaction item in transactions)
         {
             // Need to skip cash input ammounts for now, might we do something with them later?
             // Also skipping TRANSFERs

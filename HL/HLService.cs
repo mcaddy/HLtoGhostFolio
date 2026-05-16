@@ -11,7 +11,7 @@ namespace HL
         /// </summary>
         /// <param name="csv">a string array derived from a HL CSV transation export</param>
         /// <returns>List of Transactions</returns>
-        public static Collection<Transaction> ParseCSV(string[] csv)
+        public static Collection<HLTransaction> ParseCSV(string[] csv)
         {
             // Title Row - Trade date,Settle date,Reference,Description,Unit cost (p),Quantity,Value (£)
 
@@ -24,7 +24,7 @@ namespace HL
 
             bool pastHeader = false;
 
-            Collection<Transaction> transactions = [];
+            Collection<HLTransaction> transactions = [];
 
             foreach (string line in csv)
             {
@@ -84,7 +84,7 @@ namespace HL
                                 settleDate = tradeDate;
                             }
 
-                            Transaction transaction = new()
+                            HLTransaction transaction = new()
                             {
                                 TradeDate = tradeDate,
                                 SettleDate = settleDate,

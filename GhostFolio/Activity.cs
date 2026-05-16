@@ -7,7 +7,7 @@ namespace GhostFolio
 {
     public class Activity
     {
-        public Activity(Transaction transaction, Guid targetAccountId, Currency targetCurrency, Config config)
+        public Activity(HLTransaction transaction, Guid targetAccountId, Currency targetCurrency, Config config)
         {
             accountId = targetAccountId;
             currency = targetCurrency;
