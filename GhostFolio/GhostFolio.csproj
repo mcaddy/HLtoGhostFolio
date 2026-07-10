@@ -12,6 +12,7 @@
   <ItemGroup>
     <ProjectReference Include="..\HL\HL.csproj" />
     <ProjectReference Include="..\Trading212\Trading212.csproj" />
+    <ProjectReference Include="..\Freetrade\Freetrade.csproj" />
   </ItemGroup>
 
   <ItemGroup>

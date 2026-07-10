@@ -5,7 +5,10 @@ namespace Trading212
 {
     public static class Trading212Service
     {
-        // Header: Action,Time,ISIN,Ticker,Name,Notes,ID,No. of shares,Price / share,Currency (Price / share),Exchange rate,Total,Currency (Total)
+        // Header (legacy, 13 cols):
+        //   Action,Time,ISIN,Ticker,Name,Notes,ID,No. of shares,Price / share,Currency (Price / share),Exchange rate,Total,Currency (Total)
+        // Header (2026+, 15 cols) adds:
+        //   ,Withholding tax,Currency (Withholding tax)
         private const int ColAction = 0;
         private const int ColTime = 1;
         private const int ColIsin = 2;
@@ -19,7 +22,9 @@ namespace Trading212
         private const int ColExchangeRate = 10;
         private const int ColTotal = 11;
         private const int ColTotalCurrency = 12;
-        private const int ExpectedColumns = 13;
+        private const int ColWithholdingTax = 13;
+        private const int ColWithholdingTaxCurrency = 14;
+        private const int MinExpectedColumns = 13;
 
         public static Collection<Trading212Transaction> ParseCSV(string[] csv)
         {
@@ -45,9 +50,9 @@ namespace Trading212
 
                 string[] fields = SplitCsvLine(line);
 
-                if (fields.Length != ExpectedColumns)
+                if (fields.Length < MinExpectedColumns)
                 {
-                    Console.WriteLine($"Skipping invalid row (expected {ExpectedColumns} columns, got {fields.Length}): {line}");
+                    Console.WriteLine($"Skipping invalid row (expected at least {MinExpectedColumns} columns, got {fields.Length}): {line}");
                     continue;
                 }
 
@@ -93,6 +98,16 @@ namespace Trading212
                     if (!string.IsNullOrEmpty(fields[ColTotal]))
                     {
                         transaction.Total = decimal.Parse(fields[ColTotal].Trim(), CultureInfo.InvariantCulture);
+                    }
+
+                    if (fields.Length > ColWithholdingTax && !string.IsNullOrEmpty(fields[ColWithholdingTax]))
+                    {
+                        transaction.WithholdingTax = decimal.Parse(fields[ColWithholdingTax].Trim(), CultureInfo.InvariantCulture);
+                    }
+
+                    if (fields.Length > ColWithholdingTaxCurrency)
+                    {
+                        transaction.WithholdingTaxCurrency = fields[ColWithholdingTaxCurrency].Trim();
                     }
 
                     transactions.Add(transaction);

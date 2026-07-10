@@ -1,3 +1,4 @@
+using Freetrade;
 using GhostFolio;
 using HL;
 using Trading212;
@@ -52,6 +53,10 @@ static async Task importAsync(string accountName, string filePath, string config
         {
             activities = ParseTrading212Activities(csvContents, account.Id);
         }
+        else if (IsFreetradeCsv(csvContents))
+        {
+            activities = await ParseFreetradeActivitiesAsync(csvContents, account.Id, config).ConfigureAwait(false);
+        }
         else
         {
             activities = await ParseHLActivitiesAsync(csvContents, account.Id, config).ConfigureAwait(false);
@@ -76,6 +81,19 @@ static bool IsTrading212Csv(string[] csv)
     return false;
 }
 
+static bool IsFreetradeCsv(string[] csv)
+{
+    foreach (string line in csv)
+    {
+        if (!string.IsNullOrWhiteSpace(line))
+        {
+            return line.StartsWith(FreetradeService.HeaderPrefix, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
+    return false;
+}
+
 static Collection<Activity> ParseTrading212Activities(string[] csvContents, Guid accountId)
 {
     Collection<Trading212Transaction> transactions = Trading212Service.ParseCSV(csvContents);
@@ -94,6 +112,89 @@ static Collection<Activity> ParseTrading212Activities(string[] csvContents, Guid
     }
 
     return activities;
+}
+
+static async Task<Collection<Activity>> ParseFreetradeActivitiesAsync(string[] csvContents, Guid accountId, Config config)
+{
+    Collection<FreetradeTransaction> transactions = FreetradeService.ParseCSV(csvContents);
+    HashSet<string> skipIsins = [];
+    Collection<Activity> activities = [];
+
+    foreach (FreetradeTransaction item in transactions)
+    {
+        if (!string.IsNullOrEmpty(item.Isin) && skipIsins.Contains(item.Isin))
+        {
+            continue;
+        }
+
+        try
+        {
+            activities.Add(new Activity(item, accountId, Currency.GBP, config));
+        }
+        catch (NotSupportedException ex)
+        {
+            Console.WriteLine($"Skipping unsupported Freetrade transaction '{item.Type}' ({item.Title}): {ex.Message}");
+        }
+        catch (KeyNotFoundException)
+        {
+            string? resolved = await ResolveFreetradeSymbolWithPromptAsync(item, config).ConfigureAwait(false);
+
+            if (resolved != null)
+            {
+                activities.Add(new Activity(item, accountId, Currency.GBP, config));
+            }
+            else
+            {
+                Console.WriteLine($"Skipping all transactions for \"{item.Title}\" (ISIN {item.Isin}).");
+                if (!string.IsNullOrEmpty(item.Isin))
+                {
+                    skipIsins.Add(item.Isin);
+                }
+            }
+        }
+    }
+
+    return activities;
+}
+
+static async Task<string?> ResolveFreetradeSymbolWithPromptAsync(FreetradeTransaction transaction, Config config)
+{
+    Console.WriteLine();
+    Console.WriteLine($"Freetrade instrument not found in lookup CSV: \"{transaction.Title}\" (ISIN {transaction.Isin})");
+
+    if (string.IsNullOrEmpty(transaction.Isin))
+    {
+        Console.WriteLine("No ISIN available for this transaction; cannot search Yahoo Finance.");
+        return null;
+    }
+
+    Console.WriteLine($"Searching Yahoo Finance for ISIN {transaction.Isin}...");
+    IReadOnlyList<YahooQuote> results = await YahooSearch.SearchByIsinAsync(transaction.Isin).ConfigureAwait(false);
+
+    if (results.Count == 0)
+    {
+        Console.WriteLine("No results found. Check the ISIN and try again next run.");
+        return null;
+    }
+
+    Console.WriteLine("Results:");
+    for (int i = 0; i < results.Count; i++)
+    {
+        Console.WriteLine($"  {i + 1}. [{results[i].QuoteType ?? "?"}] {results[i].Symbol} — {results[i].DisplayName}");
+    }
+
+    Console.Write($"Select the correct result (1-{results.Count}) or 0 to skip: ");
+    if (!int.TryParse(Console.ReadLine(), out int choice) || choice < 1 || choice > results.Count)
+    {
+        Console.WriteLine("Skipping.");
+        return null;
+    }
+
+    YahooQuote selected = results[choice - 1];
+    YahooSearch.AppendToLookupCsv(selected.Symbol, transaction.Title, transaction.Isin, config);
+    Console.WriteLine($"Saved: \"{transaction.Title}\" (ISIN {transaction.Isin}) → {selected.Symbol}");
+
+    return selected.Symbol;
 }
 
 static async Task<Collection<Activity>> ParseHLActivitiesAsync(string[] csvContents, Guid accountId, Config config)

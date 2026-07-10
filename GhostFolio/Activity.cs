@@ -1,3 +1,4 @@
+using Freetrade;
 using HL;
 using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
@@ -94,16 +95,117 @@ namespace GhostFolio
                 quantity = transaction.NumberOfShares;
                 unitPrice = transaction.PricePerShare / transaction.ExchangeRate;
             }
-            else if (transaction.Action.Equals("Dividend", StringComparison.OrdinalIgnoreCase))
+            else if (transaction.Action.StartsWith("Dividend", StringComparison.OrdinalIgnoreCase))
             {
                 type = ActivityType.DIVIDEND;
-                quantity = 1m;
-                unitPrice = transaction.Total;
+
+                if (transaction.NumberOfShares > 0m && transaction.PricePerShare > 0m)
+                {
+                    quantity = transaction.NumberOfShares;
+                    unitPrice = transaction.PricePerShare / transaction.ExchangeRate;
+                }
+                else
+                {
+                    quantity = 1m;
+                    unitPrice = transaction.Total;
+                }
+
+                fee = Math.Abs(transaction.WithholdingTax);
             }
             else
             {
                 throw new NotSupportedException($"Unsupported Trading212 action: '{transaction.Action}'");
             }
+        }
+
+        public Activity(FreetradeTransaction transaction, Guid targetAccountId, Currency targetCurrency, Config config)
+        {
+            ArgumentNullException.ThrowIfNull(transaction);
+            ArgumentNullException.ThrowIfNull(config);
+
+            accountId = targetAccountId;
+            currency = targetCurrency;
+            date = transaction.Timestamp;
+            comment = transaction.Title;
+            tags = [];
+
+            if (transaction.Type.Equals("ORDER", StringComparison.OrdinalIgnoreCase))
+            {
+                dataSource = DataSource.YAHOO;
+                symbol = ResolveFreetradeSymbol(transaction, config);
+                quantity = transaction.Quantity;
+                unitPrice = transaction.PricePerShareInAccountCurrency;
+                fee = transaction.StampDuty + transaction.FxFeeAmount;
+
+                if (transaction.BuySell.Equals("BUY", StringComparison.OrdinalIgnoreCase))
+                {
+                    type = ActivityType.BUY;
+                }
+                else if (transaction.BuySell.Equals("SELL", StringComparison.OrdinalIgnoreCase))
+                {
+                    type = ActivityType.SELL;
+                }
+                else
+                {
+                    throw new NotSupportedException($"Unsupported Freetrade Buy/Sell value: '{transaction.BuySell}'");
+                }
+            }
+            else if (transaction.Type.Equals("DIVIDEND", StringComparison.OrdinalIgnoreCase))
+            {
+                type = ActivityType.DIVIDEND;
+                dataSource = DataSource.YAHOO;
+                symbol = ResolveFreetradeSymbol(transaction, config);
+
+                if (transaction.DividendEligibleQuantity > 0m && transaction.DividendAmountPerShare > 0m)
+                {
+                    quantity = transaction.DividendEligibleQuantity;
+                    unitPrice = transaction.DividendAmountPerShare;
+                }
+                else
+                {
+                    quantity = 1m;
+                    unitPrice = transaction.DividendNetDistributionAmount != 0m
+                        ? transaction.DividendNetDistributionAmount
+                        : transaction.TotalAmountInAccountCurrency;
+                }
+
+                fee = transaction.DividendWithheldTaxAmount;
+            }
+            else if (transaction.Type.Equals("INTEREST", StringComparison.OrdinalIgnoreCase))
+            {
+                type = ActivityType.INTEREST;
+                dataSource = DataSource.MANUAL;
+                symbol = config.InterestSymbol;
+                quantity = 1m;
+                unitPrice = transaction.TotalAmountInAccountCurrency;
+            }
+            else
+            {
+                throw new NotSupportedException($"Unsupported Freetrade Type: '{transaction.Type}'");
+            }
+        }
+
+        private static string ResolveFreetradeSymbol(FreetradeTransaction transaction, Config config)
+        {
+            if (!string.IsNullOrEmpty(transaction.Isin))
+            {
+                try
+                {
+                    return Yahoo.LookupYahooCodeByIsin(transaction.Isin, config);
+                }
+                catch (KeyNotFoundException)
+                {
+                    // Fall through to ticker-based derivation or prompt
+                }
+            }
+
+            if (!string.IsNullOrEmpty(transaction.Ticker)
+                && !transaction.Ticker.Equals(transaction.Isin, StringComparison.OrdinalIgnoreCase))
+            {
+                return DeriveYahooSymbol(transaction.Ticker, transaction.InstrumentCurrency);
+            }
+
+            throw new KeyNotFoundException($"Yahoo code not found for ISIN '{transaction.Isin}' ({transaction.Title})");
         }
 
         private static string DeriveYahooSymbol(string ticker, string pricePerShareCurrency)

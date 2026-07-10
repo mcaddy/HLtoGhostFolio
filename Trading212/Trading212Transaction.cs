@@ -13,6 +13,7 @@ namespace Trading212
             id = string.Empty;
             pricePerShareCurrency = string.Empty;
             totalCurrency = string.Empty;
+            withholdingTaxCurrency = string.Empty;
         }
 
         private string action;
@@ -117,6 +118,22 @@ namespace Trading212
         {
             get { return totalCurrency; }
             set { totalCurrency = value; }
+        }
+
+        private decimal withholdingTax;
+
+        public decimal WithholdingTax
+        {
+            get { return withholdingTax; }
+            set { withholdingTax = value; }
+        }
+
+        private string withholdingTaxCurrency;
+
+        public string WithholdingTaxCurrency
+        {
+            get { return withholdingTaxCurrency; }
+            set { withholdingTaxCurrency = value; }
         }
     }
 }

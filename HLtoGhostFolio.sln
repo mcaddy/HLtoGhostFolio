@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HL", "HL\HL.csproj", "{F22A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Trading212", "Trading212\Trading212.csproj", "{B697CBF2-5EF6-4A51-BA02-670D37BEF0C8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Freetrade", "Freetrade\Freetrade.csproj", "{C3A1E7D4-6F82-4E19-9A5B-2D8F1B9C7A45}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,18 @@ Global
 		{B697CBF2-5EF6-4A51-BA02-670D37BEF0C8}.Release|x64.Build.0 = Release|Any CPU
 		{B697CBF2-5EF6-4A51-BA02-670D37BEF0C8}.Release|x86.ActiveCfg = Release|Any CPU
 		{B697CBF2-5EF6-4A51-BA02-670D37BEF0C8}.Release|x86.Build.0 = Release|Any CPU
+		{C3A1E7D4-6F82-4E19-9A5B-2D8F1B9C7A45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3A1E7D4-6F82-4E19-9A5B-2D8F1B9C7A45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3A1E7D4-6F82-4E19-9A5B-2D8F1B9C7A45}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C3A1E7D4-6F82-4E19-9A5B-2D8F1B9C7A45}.Debug|x64.Build.0 = Debug|Any CPU
+		{C3A1E7D4-6F82-4E19-9A5B-2D8F1B9C7A45}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C3A1E7D4-6F82-4E19-9A5B-2D8F1B9C7A45}.Debug|x86.Build.0 = Debug|Any CPU
+		{C3A1E7D4-6F82-4E19-9A5B-2D8F1B9C7A45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3A1E7D4-6F82-4E19-9A5B-2D8F1B9C7A45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3A1E7D4-6F82-4E19-9A5B-2D8F1B9C7A45}.Release|x64.ActiveCfg = Release|Any CPU
+		{C3A1E7D4-6F82-4E19-9A5B-2D8F1B9C7A45}.Release|x64.Build.0 = Release|Any CPU
+		{C3A1E7D4-6F82-4E19-9A5B-2D8F1B9C7A45}.Release|x86.ActiveCfg = Release|Any CPU
+		{C3A1E7D4-6F82-4E19-9A5B-2D8F1B9C7A45}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

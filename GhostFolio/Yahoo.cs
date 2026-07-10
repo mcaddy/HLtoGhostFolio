@@ -14,8 +14,24 @@
                     return columns[0];
                 }
             }
-            
+
             throw new KeyNotFoundException($"Yahoo code not found for '{StockName}'");
+        }
+
+        static public string LookupYahooCodeByIsin(string isin, Config config)
+        {
+            string[] lines = File.ReadAllLines(config.YahooLookupPath);
+
+            foreach (string line in lines)
+            {
+                string[] columns = line.Split(",");
+                if (columns.Length >= 3 && columns[2].Equals(isin, StringComparison.OrdinalIgnoreCase))
+                {
+                    return columns[0];
+                }
+            }
+
+            throw new KeyNotFoundException($"Yahoo code not found for ISIN '{isin}'");
         }
     }
 }

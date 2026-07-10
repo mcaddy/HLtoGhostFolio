@@ -15,18 +15,22 @@
     <Compile Remove="GhostFolio\**" />
     <Compile Remove="HL\**" />
     <Compile Remove="Trading212\**" />
+    <Compile Remove="Freetrade\**" />
     <EmbeddedResource Remove="GhostFolio\**" />
     <EmbeddedResource Remove="HL\**" />
     <EmbeddedResource Remove="Trading212\**" />
+    <EmbeddedResource Remove="Freetrade\**" />
     <None Remove="GhostFolio\**" />
     <None Remove="HL\**" />
     <None Remove="Trading212\**" />
+    <None Remove="Freetrade\**" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="GhostFolio\GhostFolio.csproj" />
     <ProjectReference Include="HL\HL.csproj" />
     <ProjectReference Include="Trading212\Trading212.csproj" />
+    <ProjectReference Include="Freetrade\Freetrade.csproj" />
   </ItemGroup>
 
   <ItemGroup>
